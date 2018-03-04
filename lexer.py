@@ -6,9 +6,9 @@ row = 1
 back = [0, 0]
 
 reserved_words = {
-	'log': 1,
-	'true': 1,
-	'false': 1,
+    'log': 1,
+    'true': 1,
+    'false': 1,
 	'importar': 1,
 	'math': 1,
 	'sqrt': 1,
@@ -29,7 +29,7 @@ def delta(column, char, state):
 	global lexeme
 	global line
 	if state == 0:
-		# Cadenas no especificas => string
+		#cadenas no especificas => string
 		if char == '"':
 			lexeme = ""
 			return [8, 0]
@@ -91,14 +91,11 @@ def delta(column, char, state):
 			return [6, 0]
 		elif char == 'i':
 			return [7, 0]
+		#cadenas no especificas => id
 		elif re.match(r'[a-z]', char) or re.match(r'[A-Z]', char):
-			#if lexema + c in reserved_words:
-			#	print
-			#	"<%s,%d,%d>" % (lexema + c, line, column)
-			#	return (11, 0)
-			#else:
 			lexeme=char
 			return [9, 0]
+		#cadenas no especificas => int, float
 		elif re.match(r'[0-9]', char):
 			lexeme = char
 			return [10, 0]
@@ -165,7 +162,6 @@ def delta(column, char, state):
 	if state == 8:
 		if char=='"':
 			print("<token_string," + lexeme + "," + str(row) + "," + str(column-len(lexeme)-1) + ">")
-			lexeme = ""
 			return[0, 0]
 		else:
 			lexeme = lexeme + char
@@ -176,36 +172,35 @@ def delta(column, char, state):
 			lexeme = lexeme + str(char)
 			return[9, 0]
 		else:
-			print("<id," + lexeme + "," + str(row) + "," + str(column-len(lexeme)) + ">")
-	        lexeme = ""
-            return [0, 1]
+			print("<id," + lexeme + "," + str(row) + "," + str(column - len(lexeme)) + ">")
+			return [0, 1]
 
-    if state == 10:
-        if re.match(r'[0-9]', char):
-            lexeme = lexeme + char
-            return [10, 0]
-        elif char == '.':
-            lexeme = lexeme + char
-            return [11, 0]
-        else:
-            print("<token_integer," + lexeme + "," + str(row) + "," + str(column - len(lexeme)) + ">")
-            return[0, 1]
+	if state == 10:
+		if re.match(r'[0-9]', char):
+			lexeme = lexeme + char
+			return [10, 0]
+		elif char == '.':
+			lexeme = lexeme + char
+			return [11, 0]
+		else:
+			print("<token_integer," + lexeme + "," + str(row) + "," + str(column - len(lexeme)) + ">")
+			return [0, 1]
 
 	if state == 11:
 		if re.match(r'[0-9]', char):
-            lexeme = lexeme + char
+			lexeme = lexeme + char
 			return[12, 0]
 		else:
-            print("<token_integer," + lexeme + "," + str(row) + "," + str(column - len(lexeme)) + ">")
+			print("<token_integer," + lexeme + "," + str(row) + "," + str(column - len(lexeme)) + ">")
 			return[0, 2]
 
 	if state == 12:
 		if re.match(r'[0-9]', char):
-            lexeme = lexeme + char
+			lexeme = lexeme + char
 			return[12, 0]
 		else:
-            print("<token_float," + lexeme + "," + str(row) + "," + str(column - len(lexeme)) + ">")
-			return(0,1)
+			print("<token_float," + lexeme + "," + str(row) + "," + str(column - len(lexeme)) + ">")
+			return [0, 1]
 
 
 line = input()
@@ -218,9 +213,19 @@ while len(line):
 	if(back[0]==8):
 		print("Error lexico(linea:" + str(row) + ",posicion:" + str(i-len(lexeme)) + ")")
 		exit(0)
-	if (back[0] == 9):
+	if(back[0] == 9):
 		print("<id," + lexeme + "," + str(row) + "," + str(i - len(lexeme) + 1) + ">")
 		back[0] = 0
-	lexeme = ""
+	if back[0] == 10:
+		print("<token_integer," + lexeme + "," + str(row) + "," + str(i - len(lexeme) + 1) + ">")
+		back[0] = 0
+	if (back[0] == 11):
+		print("<token_float," + lexeme[0:len(lexeme)-1] + "," + str(row) + "," + str(i - len(lexeme) + 1) + ">")
+		print("<token_point," + str(row) + "," + str(i) + ">")
+		back[0] = 0
+	if (back[0] == 12):
+		print("<token_float," + lexeme + "," + str(row) + "," + str(i - len(lexeme) + 1) + ">")
+		back[0] = 0
+
 	line = input()
 	row += 1
