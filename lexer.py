@@ -21,7 +21,8 @@ reserved_words = [
     'for',
     'funcion',
     'retorno',
-    'end'
+    'end',
+    'if'
 ]
 
 def delta(column, char, state):
@@ -208,7 +209,7 @@ def delta(column, char, state):
 
 line = input()
 print()
-while len(line):
+while True:
     i = 0
     line = line+" "
 
