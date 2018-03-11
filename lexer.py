@@ -194,7 +194,7 @@ def delta(column, char, state):
             lexeme = lexeme + char
             return[12, 0]
         else:
-            print("<token_integer," + lexeme + "," + str(row) + "," + str(column - len(lexeme)) + ">")
+            print("<token_integer," + lexeme[0:len(lexeme)-1] + "," + str(row) + "," + str(column - len(lexeme)) + ">")
             return[0, 2]
 
     if state == 12:
@@ -210,18 +210,19 @@ line = input()
 print()
 while len(line):
     i = 0
+    line = line+" "
+
     while i < len(line):
         back = delta(i+1, line[i], back[0])
         i = i + 1 - back[1]
-    if back[0] != 0:
-        back = delta(i+1, " ", back[0])
+    if back[0] == 8:
+        print("Error lexico(linea:" + str(row) + ",posicion:" + str(i - len(lexeme)) + ")")
+        exit(0)
+
     line = input()
     row += 1
 
     """
-    if back[0] == 8:
-        print("Error lexico(linea:" + str(row) + ",posicion:" + str(i-len(lexeme)) + ")")
-        exit(0)
     if(back[0] == 9):
         if (lexeme in reserved_words):
             print("<"+lexeme + "," + str(row) + "," + str(i - len(lexeme) + 1) + ">")
