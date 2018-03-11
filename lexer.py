@@ -22,15 +22,24 @@ reserved_words = [
     'funcion',
     'retorno',
     'end',
-    'if'
+    'if',
+    'while'
 ]
+
+alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+            'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '{', '}', '#', '[', ']', '(', ')', '<', '>', '=', '.',
+            '!', '&', '|', '+', '-', '*', '/', '%', '^', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '"']
 
 def delta(column, char, state):
     global lexeme
     global line
     if state == 0:
+        if char not in alphabet:
+            print("Error lexico(linea:" + str(row) + ",posicion:" + str(column) + ")")
+            exit(0)
         #cadenas no especificas => string
-        if char == '"':
+        elif char == '"':
             lexeme = ""
             return [8, 0]
         # operadores especiales
@@ -57,6 +66,8 @@ def delta(column, char, state):
             print("<token_par_der," + str(row) + "," + str(column) + ">")
             return [0, 0]
         elif char == '.':
+            #lexeme = char
+            #return [11, 0]
             print("<token_point," + str(row) + "," + str(column) + ">")
             return [0, 0]
         elif char == '+':
@@ -94,7 +105,7 @@ def delta(column, char, state):
         #cadenas no especificas => id
         #palabras reservadas
         elif re.match(r'[a-z]', char) or re.match(r'[A-Z]', char):
-            lexeme=char
+            lexeme = char
             return [9, 0]
         #cadenas no especificas => int, float
         elif re.match(r'[0-9]', char):
@@ -161,7 +172,7 @@ def delta(column, char, state):
             return [9, 1]
 
     if state == 8:
-        if char=='"':
+        if char == '"':
             print("<token_string," + lexeme + "," + str(row) + "," + str(column-len(lexeme)-1) + ">")
             return[0, 0]
         else:
@@ -195,8 +206,14 @@ def delta(column, char, state):
             lexeme = lexeme + char
             return[12, 0]
         else:
-            print("<token_integer," + lexeme[0:len(lexeme)-1] + "," + str(row) + "," + str(column - len(lexeme)) + ">")
-            return[0, 2]
+            #if lexeme == '.':
+            #    print("<token_point," + str(row) + "," + str(column-1) + ">")
+            #else:
+            #    print("<token_integer," + lexeme[0:len(lexeme) - 1] + "," + str(row) + "," + str(column - len(lexeme)) + ">")
+            #    print("<token_point," + str(row) + "," + str(column-1) + ">")
+            #return[0, 1]
+            print("<token_integer," + lexeme[0:len(lexeme) - 1] + "," + str(row) + "," + str(column - len(lexeme)) + ">")
+            return [0, 2]
 
     if state == 12:
         if re.match(r'[0-9]', char):
@@ -216,6 +233,7 @@ while True:
     while i < len(line):
         back = delta(i+1, line[i], back[0])
         i = i + 1 - back[1]
+        #print(back[0], back[1])
     if back[0] == 8:
         print("Error lexico(linea:" + str(row) + ",posicion:" + str(i - len(lexeme)) + ")")
         exit(0)
