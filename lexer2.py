@@ -1,4 +1,5 @@
 import re
+import sys
 
 global lexeme
 global line
@@ -208,8 +209,8 @@ def delta(column, char, state):
             return [0, 1]
 
 
-line = input()
-print()
+line = sys.stdin.readline()
+print
 while True:
     i = 0
     line = line+" "
@@ -221,7 +222,7 @@ while True:
         print("Error lexico(linea:" + str(row) + ",posicion:" + str(i - len(lexeme)) + ")")
         exit(0)
 
-    line = input()
+    line = sys.stdin.readline()
     row += 1
 
     """
